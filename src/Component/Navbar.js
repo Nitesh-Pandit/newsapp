@@ -66,7 +66,7 @@ export default class Navbar extends Component {
               <li className="nav-item dropdown">
                 <a
                   className="nav-link dropdown-toggle"
-                  href="#"
+                  href="/"
                   id="categoryDropdown"
                   role="button"
                   data-bs-toggle="dropdown"
