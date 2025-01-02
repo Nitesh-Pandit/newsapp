@@ -47,7 +47,7 @@ export default class News extends Component {
     this.setState({ loading: true });
 
     try {
-      const url = `https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${this.props.apiKey}&page=${page}&pageSize=${pageSize}`;
+      const url = `https://cors-anywhere.herokuapp.com/https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${this.props.apiKey}&page=${page}&pageSize=${pageSize}`;
       let data = await fetch(url);
       this.props.setProgress(30);
       let parsedData = await data.json();
