@@ -16,6 +16,7 @@ export default class News extends Component {
     apiKey: PropTypes.string.isRequired,
   };
 
+
   constructor(props) {
     super(props);
     this.state = {
@@ -47,7 +48,7 @@ export default class News extends Component {
     this.setState({ loading: true });
 
     try {
-      const url = `https://cors-anywhere.herokuapp.com/https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${this.props.apiKey}&page=${page}&pageSize=${pageSize}`;
+      const url = `https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${this.props.apiKey}&page=${page}&pageSize=${pageSize}`;
       let data = await fetch(url);
       this.props.setProgress(30);
       let parsedData = await data.json();
@@ -98,6 +99,30 @@ export default class News extends Component {
       this.setState({ isOffline: true });
     }
   };
+
+  async fetchMoreData() {
+    const { category, pageSize } = this.props;
+    const { page } = this.state;
+  
+    try {
+      const url = `https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${this.props.apiKey}&page=${
+        page + 1
+      }&pageSize=${pageSize}`;
+      let data = await fetch(url);
+      let parsedData = await data.json();
+  
+      this.setState({
+        articles: this.state.articles.concat(parsedData.articles),
+        filteredArticles: this.state.articles.concat(parsedData.articles),
+        page: page + 1,
+        isOffline: false,
+      });
+    } catch (error) {
+      console.error("Error fetching more data:", error);
+      this.setState({ isOffline: true });
+    }
+  }
+  
 
   filterArticles = () => {
     const { searchQuery, articles } = this.state;
@@ -162,36 +187,37 @@ export default class News extends Component {
 
           {/* Infinite Scroll Component */}
           <InfiniteScroll
-            dataLength={filteredArticles.length}
-            next={this.fetchMoreData}
-            hasMore={this.state.articles.length !== this.state.totalResults}
-            loader={<Spinner />}
-          >
-            <div className="container">
-              <div className="row my-3">
-                {!loading &&
-                  filteredArticles.map((element) => {
-                    return (
-                      <div className="col-md-4 my-3" key={element.url}>
-                        <Newsitems
-                          title={element.title ? element.title : ""}
-                          description={
-                            element.description
-                              ? element.description
-                              : "No description is available"
-                          }
-                          imgUrl={element.urlToImage}
-                          newsUrl={element.url}
-                          author1={element.author ? element.author : "Unknown"}
-                          date={element.publishedAt}
-                          source1={element.source.name}
-                        />
-                      </div>
-                    );
-                  })}
-              </div>
+  dataLength={filteredArticles.length}
+  next={this.fetchMoreData.bind(this)}
+  hasMore={filteredArticles.length < this.state.totalResults}
+  loader={<Spinner />}
+>
+  <div className="container">
+    <div className="row my-3">
+      {!loading &&
+        filteredArticles.map((element) => {
+          return (
+            <div className="col-md-4 my-3" key={element.url}>
+              <Newsitems
+                title={element.title ? element.title : ""}
+                description={
+                  element.description
+                    ? element.description
+                    : "No description is available"
+                }
+                imgUrl={element.urlToImage}
+                newsUrl={element.url}
+                author1={element.author ? element.author : "Unknown"}
+                date={element.publishedAt}
+                source1={element.source.name}
+              />
             </div>
-          </InfiniteScroll>
+          );
+        })}
+    </div>
+  </div>
+</InfiniteScroll>
+
         </div>
       </div>
     );
