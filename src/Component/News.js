@@ -15,8 +15,6 @@ export default class News extends Component {
     category: PropTypes.string,
     apiKey: PropTypes.string.isRequired,
   };
-
-
   constructor(props) {
     super(props);
     this.state = {
@@ -217,9 +215,10 @@ export default class News extends Component {
     </div>
   </div>
 </InfiniteScroll>
-
         </div>
       </div>
     );
   }
 }
+
+
